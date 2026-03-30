@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Trans-X — Smart Mobility Kigali</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #060a0e;
+  --bg2: #0b1118;
+  --bg3: #111c26;
+  --card: #0f1921;
+  --card2: #152030;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #00e87a;
+  --accent2: #00c464;
+  --blue: #1e9bff;
+  --orange: #ff8c3a;
+  --red: #ff4757;
+  --yellow: #ffd32a;
+  --purple: #a855f7;
+  --text: #eef2f7;
+  --text2: #7a8fa8;
+  --text3: #384a5c;
+  --radius: 16px;
+  --radius2: 10px;
+  --shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  cursor:default;
+}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--accent2);border-radius:2px;}
+
+/* ── NOISE OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;opacity:0.4;
+}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:60px;
+  background:rgba(6,10,14,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 32px;gap:32px;
+}
+.logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;
+  display:flex;align-items:center;gap:8px;
+}
+.logo-hex{
+  width:28px;height:28px;background:var(--accent);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.65rem;color:#000;font-weight:900;
+}
+.logo span{color:var(--accent);}
+.nav-pills{display:flex;gap:4px;margin-left:8px;}
+.npill{
+  background:none;border:none;color:var(--text2);
+  font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:500;
+  padding:7px 14px;border-radius:100px;cursor:pointer;
+  transition:all 0.2s;
+}
+.npill:hover,.npill.active{background:rgba(0,232,122,0.1);color:var(--accent);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.live-badge{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,232,122,0.08);border:1px solid rgba(0,232,122,0.2);
+  padding:5px 12px;border-radius:100px;
+  font-size:0.75rem;font-weight:600;color:var(--accent);
+}
+.live-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 1.3s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.btn{
+  background:var(--accent);color:#000;border:none;
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.85rem;
+  padding:9px 20px;border-radius:100px;cursor:pointer;
+  transition:all 0.2s;
+}
+.btn:hover{background:#00ff88;transform:translateY(-1px);}
+.btn.ghost{background:none;color:var(--text);border:1px solid var(--border2);}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── SCREENS ── */
+.screen{display:none;animation:fadeUp 0.45s ease;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+
+/* ══════════════════════════════
+   SCREEN 0 — SPLASH / HERO
+══════════════════════════════ */
+#s0{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;padding:60px 24px 0;
+}
+.hero-bg{position:absolute;inset:0;pointer-events:none;}
+.hglow{position:absolute;border-radius:50%;filter:blur(100px);}
+.hg1{width:600px;height:600px;background:rgba(0,232,122,0.12);top:-150px;right:-100px;}
+.hg2{width:500px;height:500px;background:rgba(30,155,255,0.08);bottom:-100px;left:-100px;}
+.hgrid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:56px 56px;
+}
+.hero-inner{position:relative;z-index:2;text-align:center;max-width:780px;}
+.hero-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,232,122,0.08);border:1px solid rgba(0,232,122,0.25);
+  padding:7px 16px;border-radius:100px;margin-bottom:28px;
+  font-size:0.78rem;font-weight:600;color:var(--accent);letter-spacing:0.3px;
+}
+.hero-chip span{color:var(--text2);}
+h1.hero-title{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(3rem,7vw,5.5rem);line-height:1.0;
+  margin-bottom:24px;letter-spacing:-1px;
+}
+.grad{
+  background:linear-gradient(135deg,var(--accent) 0%,var(--blue) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  color:var(--text2);font-size:1.15rem;line-height:1.75;
+  max-width:560px;margin:0 auto 40px;font-weight:300;
+}
+.hero-sub strong{color:var(--text);font-weight:500;}
+.hero-ctas{display:flex;gap:12px;justify-content:center;margin-bottom:56px;flex-wrap:wrap;}
+.hero-stats{
+  display:flex;gap:0;
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:var(--radius);overflow:hidden;
+  margin-bottom:56px;
+}
+.hstat{
+  flex:1;padding:20px 24px;text-align:center;
+  border-right:1px solid var(--border);
+}
+.hstat:last-child{border-right:none;}
+.hstat-num{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;
+  color:var(--accent);display:block;line-height:1;
+}
+.hstat-label{font-size:0.75rem;color:var(--text2);margin-top:5px;}
+
+/* Mini map preview */
+.map-preview{
+  position:relative;z-index:2;
+  width:100%;max-width:900px;margin:0 auto;
+}
+.map-frame{
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:0 0 80px rgba(0,232,122,0.1),var(--shadow);
+}
+.mf-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;border-bottom:1px solid var(--border);
+  font-size:0.82rem;font-weight:600;
+}
+.mf-dots{display:flex;gap:6px;}
+.mf-dot{width:10px;height:10px;border-radius:50%;}
+.mf-body{height:260px;background:var(--bg2);position:relative;overflow:hidden;}
+.mf-label{
+  position:absolute;bottom:12px;right:12px;
+  background:rgba(0,0,0,0.7);border:1px solid var(--border2);
+  border-radius:8px;padding:6px 12px;font-size:0.72rem;color:var(--text2);
+}
+
+/* ══════════════════════════════
+   SCREEN 1 — COMMUTER VIEW
+══════════════════════════════ */
+#s1{padding:80px 24px 80px;max-width:1200px;margin:0 auto;}
+.screen-title{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;
+  margin-bottom:6px;
+}
+.screen-sub{color:var(--text2);margin-bottom:36px;font-size:0.95rem;}
+
+.commuter-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+/* Journey Planner */
+.journey-card{
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:24px;
+}
+.jcard-title{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;
+  margin-bottom:20px;display:flex;align-items:center;gap:8px;
+}
+.jtag{font-size:0.7rem;background:rgba(0,232,122,0.1);color:var(--accent);padding:3px 8px;border-radius:100px;}
+.stop-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:var(--radius2);padding:12px 14px;margin-bottom:8px;
+  cursor:pointer;transition:all 0.2s;
+}
+.stop-row:hover{border-color:var(--accent);}
+.stop-icon{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:0.9rem;
+  background:rgba(0,232,122,0.1);
+}
+.stop-icon.dest{background:rgba(30,155,255,0.1);}
+.stop-text{flex:1;}
+.stop-name{font-weight:600;font-size:0.9rem;}
+.stop-meta{font-size:0.75rem;color:var(--text2);}
+.stop-line{
+  width:2px;height:20px;background:var(--border2);
+  margin-left:15px;
+}
+.time-sel{
+  display:flex;gap:6px;margin:16px 0;
+}
+.tpill{
+  flex:1;text-align:center;padding:8px;border-radius:var(--radius2);
+  font-size:0.78rem;font-weight:600;border:1px solid var(--border);
+  cursor:pointer;transition:all 0.2s;color:var(--text2);
+  background:var(--bg2);
+}
+.tpill.active,.tpill:hover{background:rgba(0,232,122,0.1);border-color:var(--accent);color:var(--accent);}
+.predict-btn{
+  width:100%;background:var(--accent);color:#000;border:none;
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.9rem;
+  padding:13px;border-radius:var(--radius2);cursor:pointer;
+  transition:all 0.2s;margin-top:4px;
+}
+.predict-btn:hover{background:#00ff88;}
+
+/* Result card */
+.result-card{
+  background:linear-gradient(135deg,rgba(0,232,122,0.06),rgba(30,155,255,0.04));
+  border:1px solid rgba(0,232,122,0.2);
+  border-radius:var(--radius);padding:24px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.result-route{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;
+  color:var(--accent);
+}
+.result-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.rmetric{
+  background:rgba(0,0,0,0.3);border-radius:var(--radius2);
+  padding:14px;text-align:center;
+}
+.rmetric-val{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;
+  display:block;line-height:1;
+}
+.rmetric-key{font-size:0.72rem;color:var(--text2);margin-top:5px;}
+.result-advice{
+  background:rgba(0,0,0,0.25);border-radius:var(--radius2);
+  padding:14px;font-size:0.85rem;color:var(--text2);line-height:1.6;
+}
+.result-advice strong{color:var(--text);}
+.buses-coming{margin-top:4px;}
+.bcome-title{font-size:0.8rem;color:var(--text2);margin-bottom:8px;font-weight:600;}
+.bcome-list{display:flex;flex-direction:column;gap:6px;}
+.bcome-item{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,0,0,0.2);border-radius:8px;padding:9px 12px;
+  font-size:0.82rem;
+}
+.bcome-num{
+  background:var(--accent);color:#000;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:0.72rem;
+  padding:2px 7px;border-radius:4px;
+}
+.bcome-time{color:var(--accent);font-weight:700;margin-left:auto;}
+.cap-bar{
+  height:4px;width:60px;background:var(--bg3);border-radius:2px;overflow:hidden;
+}
+.cap-fill{height:100%;border-radius:2px;}
+
+/* ══════════════════════════════
+   SCREEN 2 — OPERATOR DASHBOARD
+══════════════════════════════ */
+#s2{padding:80px 24px 80px;max-width:1300px;margin:0 auto;}
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+.dkpi{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+  border-top:3px solid transparent;transition:all 0.2s;
+}
+.dkpi:hover{border-color:var(--border2);transform:translateY(-2px);}
+.dkpi.g{border-top-color:var(--accent);}
+.dkpi.b{border-top-color:var(--blue);}
+.dkpi.o{border-top-color:var(--orange);}
+.dkpi.r{border-top-color:var(--red);}
+.dkpi-icon{font-size:1.3rem;margin-bottom:10px;}
+.dkpi-val{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.7rem;
+  display:block;line-height:1;
+}
+.dkpi-label{font-size:0.78rem;color:var(--text2);margin-top:4px;}
+.dkpi-trend{font-size:0.72rem;color:var(--text3);margin-top:6px;}
+
+.dash-row2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:20px;}
+.dash-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+
+.dcard{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+}
+.dcard-title{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;
+  margin-bottom:16px;color:var(--text2);letter-spacing:0.3px;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;justify-content:space-between;
+}
+.dtag{
+  font-size:0.68rem;padding:3px 8px;border-radius:100px;
+  background:rgba(0,232,122,0.1);color:var(--accent);
+  text-transform:none;letter-spacing:0;
+}
+.dtag.warn{background:rgba(255,215,42,0.1);color:var(--yellow);}
+.dtag.alert{background:rgba(255,71,87,0.1);color:var(--red);}
+
+/* Forecast bars */
+.forecast-bars{display:flex;align-items:flex-end;gap:5px;height:160px;padding-top:8px;}
+.fbar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.fbar{
+  width:100%;border-radius:4px 4px 0 0;
+  transition:height 1s cubic-bezier(.34,1.56,.64,1);min-height:4px;
+}
+.fbar-label{font-size:0.65rem;color:var(--text2);}
+.fbar-val{font-size:0.68rem;font-weight:700;}
+
+/* Corridor table */
+.corr-table{display:flex;flex-direction:column;gap:8px;}
+.ct-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;background:var(--bg2);
+  border-radius:var(--radius2);border:1px solid var(--border);
+}
+.ct-badge{
+  width:28px;height:28px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:0.82rem;
+}
+.ct-name{font-size:0.82rem;font-weight:600;flex:1;}
+.ct-load{font-size:0.75rem;color:var(--text2);}
+.ct-bar{width:80px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;}
+.ct-fill{height:100%;border-radius:3px;}
+.ct-status{width:7px;height:7px;border-radius:50%;}
+
+/* Alert list */
+.alert-item{
+  display:flex;gap:10px;padding:10px 12px;
+  background:var(--bg2);border-radius:var(--radius2);
+  border-left:3px solid transparent;margin-bottom:8px;
+}
+.alert-item.r{border-color:var(--red);}
+.alert-item.o{border-color:var(--orange);}
+.alert-item.y{border-color:var(--yellow);}
+.ai-icon{font-size:0.9rem;}
+.ai-msg{font-size:0.82rem;font-weight:500;color:var(--text);}
+.ai-time{font-size:0.72rem;color:var(--text3);margin-top:2px;}
+
+/* Fleet mini cards */
+.fleet-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.fleet-item{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius2);padding:10px;
+}
+.fi-bus{font-size:0.78rem;font-weight:700;color:var(--text);}
+.fi-route{font-size:0.72rem;color:var(--text2);}
+.fi-status{
+  display:inline-block;font-size:0.65rem;font-weight:700;
+  padding:2px 7px;border-radius:100px;margin-top:5px;
+}
+.fi-status.on{background:rgba(0,232,122,0.1);color:var(--accent);}
+.fi-status.full{background:rgba(255,71,87,0.1);color:var(--red);}
+.fi-status.late{background:rgba(255,215,42,0.1);color:var(--yellow);}
+
+/* ══════════════════════════════
+   SCREEN 3 — TICKETING
+══════════════════════════════ */
+#s3{padding:80px 24px 80px;max-width:1100px;margin:0 auto;}
+.ticket-layout{display:grid;grid-template-columns:1fr 1.2fr;gap:24px;align-items:start;}
+.tform{
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:28px;
+}
+.tform h3{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;
+  margin-bottom:24px;
+}
+.fg{margin-bottom:16px;}
+.fg label{
+  display:block;font-size:0.78rem;font-weight:600;
+  color:var(--text2);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.4px;
+}
+.fg select,.fg input{
+  width:100%;background:var(--bg2);border:1px solid var(--border2);
+  color:var(--text);border-radius:var(--radius2);padding:12px 14px;
+  font-family:'DM Sans',sans-serif;font-size:0.9rem;
+  appearance:none;cursor:pointer;transition:border-color 0.2s;
+}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--accent);}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.poption{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:var(--radius2);padding:12px;text-align:center;
+  font-size:0.82rem;cursor:pointer;transition:all 0.2s;
+}
+.poption:hover,.poption.active{
+  border-color:var(--accent);
+  background:rgba(0,232,122,0.06);color:var(--accent);
+}
+.fare-row{
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--bg2);border-radius:var(--radius2);padding:14px 16px;
+  margin:16px 0;
+}
+.fare-label{font-size:0.85rem;color:var(--text2);}
+.fare-val{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--accent);}
+.buy-btn{
+  width:100%;background:var(--accent);color:#000;border:none;
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;
+  padding:15px;border-radius:var(--radius2);cursor:pointer;
+  transition:all 0.2s;
+}
+.buy-btn:hover{background:#00ff88;transform:translateY(-1px);}
+
+/* Ticket output */
+.ticket-output{display:flex;flex-direction:column;gap:16px;}
+.tcard{
+  background:linear-gradient(145deg,#0f2a1a,#0a1a2e);
+  border:1px solid rgba(0,232,122,0.3);
+  border-radius:var(--radius);padding:28px;
+  position:relative;overflow:hidden;
+}
+.tcard::before{
+  content:'';position:absolute;
+  top:-60px;right:-60px;width:200px;height:200px;
+  background:radial-gradient(circle,rgba(0,232,122,0.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.tcard::after{
+  content:'';position:absolute;
+  bottom:-40px;left:-40px;width:160px;height:160px;
+  background:radial-gradient(circle,rgba(30,155,255,0.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.tc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
+.tc-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;}
+.tc-logo span{color:var(--accent);}
+.tc-num{text-align:right;}
+.tc-num-val{font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;color:var(--accent);}
+.tc-num-date{font-size:0.72rem;color:var(--text2);}
+.tc-route{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  padding:16px;background:rgba(0,0,0,0.2);border-radius:10px;
+  margin-bottom:20px;
+}
+.tc-stop{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;text-align:center;}
+.tc-stop small{display:block;font-family:'DM Sans',sans-serif;font-weight:400;font-size:0.7rem;color:var(--text2);}
+.tc-arrow{color:var(--accent);font-size:1.4rem;}
+.tc-details{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;}
+.tc-det{text-align:center;background:rgba(0,0,0,0.2);border-radius:8px;padding:10px;}
+.tc-det span{display:block;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;}
+.tc-det small{font-size:0.68rem;color:var(--text2);}
+.tc-qr{
+  width:72px;height:72px;background:var(--text);
+  border-radius:8px;margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;
+}
+.tc-note{text-align:center;font-size:0.72rem;color:var(--text2);}
+.eco-note{
+  background:rgba(0,232,122,0.04);border:1px solid rgba(0,232,122,0.15);
+  border-radius:var(--radius2);padding:14px;
+  font-size:0.82rem;color:var(--text2);line-height:1.6;display:flex;gap:10px;
+}
+.eco-note-icon{font-size:1.2rem;}
+
+/* ══════════════════════════════
+   SCREEN 4 — ABOUT / PITCH SLIDE
+══════════════════════════════ */
+#s4{
+  min-height:100vh;padding:80px 24px;
+  max-width:1100px;margin:0 auto;
+}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+.about-left{}
+.about-right{}
+.about-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);
+  color:var(--purple);padding:6px 14px;border-radius:100px;
+  font-size:0.75rem;font-weight:600;margin-bottom:20px;
+}
+.about-title{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:2.2rem;
+  line-height:1.1;margin-bottom:16px;
+}
+.about-desc{color:var(--text2);font-size:0.95rem;line-height:1.75;margin-bottom:28px;}
+.impact-list{display:flex;flex-direction:column;gap:12px;margin-bottom:28px;}
+.impact-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius2);
+}
+.impact-icon{font-size:1.2rem;margin-top:1px;}
+.impact-text{font-size:0.88rem;color:var(--text2);line-height:1.5;}
+.impact-text strong{color:var(--text);}
+.stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.stack-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius2);padding:14px;
+}
+.stack-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;margin-bottom:4px;}
+.stack-desc{font-size:0.75rem;color:var(--text2);}
+.partner-row{
+  background:linear-gradient(135deg,rgba(0,232,122,0.05),rgba(30,155,255,0.05));
+  border:1px solid rgba(0,232,122,0.2);
+  border-radius:var(--radius);padding:20px;
+}
+.partner-row h4{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;
+  color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:12px;
+}
+.partner-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.pchip{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:8px;padding:7px 14px;font-size:0.8rem;font-weight:600;
+}
+
+/* ══════════════════════════════
+   ANIMATED MAP (shared)
+══════════════════════════════ */
+.map-canvas{width:100%;height:100%;position:relative;}
+.mnode{
+  position:absolute;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.mnode-dot{
+  width:9px;height:9px;background:var(--accent);border-radius:50%;
+  box-shadow:0 0 8px rgba(0,232,122,0.5);
+}
+.mnode-dot.hub{
+  width:14px;height:14px;
+  box-shadow:0 0 16px rgba(0,232,122,0.7);
+  animation:hubpulse 2s infinite;
+}
+@keyframes hubpulse{
+  0%,100%{box-shadow:0 0 8px rgba(0,232,122,0.5);}
+  50%{box-shadow:0 0 24px rgba(0,232,122,0.9);}
+}
+.mnode-label{
+  font-size:0.58rem;color:var(--text2);white-space:nowrap;
+  background:rgba(6,10,14,0.8);padding:2px 5px;border-radius:3px;
+}
+.mline{
+  position:absolute;height:1px;background:rgba(0,232,122,0.18);
+  transform-origin:left center;
+}
+.mbus{
+  position:absolute;width:7px;height:7px;
+  background:var(--blue);border-radius:50%;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 6px rgba(30,155,255,0.6);
+}
+.mbus.busy{background:var(--orange);}
+.mcorr-label{
+  position:absolute;font-size:0.62rem;
+  background:rgba(0,232,122,0.1);border:1px solid rgba(0,232,122,0.2);
+  color:var(--accent);padding:3px 7px;border-radius:4px;
+}
+
+/* ── BOTTOM NAV ── */
+.bnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(6,10,14,0.92);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;justify-content:center;gap:4px;
+  padding:8px 16px 14px;
+}
+.bnav-btn{
+  background:none;border:none;color:var(--text2);
+  font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:500;
+  padding:9px 20px;border-radius:100px;cursor:pointer;
+  transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.bnav-btn:hover,.bnav-btn.active{
+  background:rgba(0,232,122,0.08);color:var(--accent);
+}
+.bnav-icon{font-size:1.1rem;}
+
+/* ── UTILITY ── */
+.accent{color:var(--accent);}
+.blue{color:var(--blue);}
+.orange{color:var(--orange);}
+.red{color:var(--red);}
+
+@media(max-width:900px){
+  .commuter-grid,.dash-row2,.dash-row3,.about-grid,.ticket-layout{grid-template-columns:1fr;}
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  h1.hero-title{font-size:2.8rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="logo">
+    <div class="logo-hex">TX</div>
+    Trans<span>-X</span>
+  </div>
+  <div class="nav-pills">
+    <button class="npill active" onclick="go(0)">Overview</button>
+    <button class="npill" onclick="go(1)">Commuter</button>
+    <button class="npill" onclick="go(2)">Operator</button>
+    <button class="npill" onclick="go(3)">Ticketing</button>
+    <button class="npill" onclick="go(4)">About</button>
+  </div>
+  <div class="nav-right">
+    <div class="live-badge"><div class="live-dot"></div>LIVE · Kigali</div>
+    <button class="btn" onclick="go(3)">Buy Ticket</button>
+  </div>
+</nav>
+
+<!-- ═══ SCREEN 0 · HERO ═══ -->
+<div class="screen active" id="s0">
+  <div class="hero-bg">
+    <div class="hgrid"></div>
+    <div class="hglow hg1"></div>
+    <div class="hglow hg2"></div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-chip">🇷🇼 <span>Powered by</span> Ecofleet Solutions · RURA Certified</div>
+    <h1 class="hero-title">Kigali's Buses,<br/><span class="grad">Finally Smart</span></h1>
+    <p class="hero-sub">
+      Trans-X brings <strong>AI-powered tracking</strong>, real-time arrival predictions,
+      and digital ticketing to every bus in Kigali — across all
+      <strong>7 corridors</strong> and <strong>18 licensed operators</strong>.
+    </p>
+    <div class="hero-ctas">
+      <button class="btn" onclick="go(1)">Try Commuter View →</button>
+      <button class="btn ghost" onclick="go(2)">Operator Dashboard</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><span class="hstat-num" id="hc1">0</span><div class="hstat-label">Active Buses</div></div>
+      <div class="hstat"><span class="hstat-num" id="hc2">0</span><div class="hstat-label">Corridors</div></div>
+      <div class="hstat"><span class="hstat-num" id="hc3">0</span><div class="hstat-label">Operators</div></div>
+      <div class="hstat"><span class="hstat-num" id="hc4">0</span><div class="hstat-label">Routes</div></div>
+      <div class="hstat"><span class="hstat-num" id="hc5">0</span><div class="hstat-label">Passengers Today</div></div>
+    </div>
+  </div>
+  <div class="map-preview" style="margin-top:40px;">
+    <div class="map-frame">
+      <div class="mf-header">
+        <div class="mf-dots">
+          <div class="mf-dot" style="background:#ff5f57"></div>
+          <div class="mf-dot" style="background:#febc2e"></div>
+          <div class="mf-dot" style="background:#28c840"></div>
+        </div>
+        <span>Live Fleet Map — Kigali Metropolitan Area</span>
+        <div class="live-badge" style="padding:3px 10px;font-size:0.7rem;"><div class="live-dot"></div>487 buses active</div>
+      </div>
+      <div class="mf-body" id="heroMap">
+        <div class="mf-label">Trans-X · Real-time GPS Network</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 1 · COMMUTER ═══ -->
+<div class="screen" id="s1">
+  <div class="screen-title">Commuter View</div>
+  <div class="screen-sub">Plan your journey · Track buses live · Avoid crowded stops</div>
+  <div class="commuter-grid">
+    <div class="journey-card">
+      <div class="jcard-title">AI Journey Planner <span class="jtag">Powered by Trans-X AI</span></div>
+      <div class="stop-row" onclick="setStop('from','Nyabugogo Terminal')">
+        <div class="stop-icon">📍</div>
+        <div class="stop-text">
+          <div class="stop-name" id="fromLabel">Nyabugogo Terminal</div>
+          <div class="stop-meta">Departure stop</div>
+        </div>
+      </div>
+      <div class="stop-line"></div>
+      <div class="stop-row" onclick="setStop('to','Downtown / CBD')">
+        <div class="stop-icon dest">🏁</div>
+        <div class="stop-text">
+          <div class="stop-name" id="toLabel">Downtown / CBD</div>
+          <div class="stop-meta">Destination</div>
+        </div>
+      </div>
+      <div class="time-sel" style="margin-top:16px;">
+        <div class="tpill active" onclick="selTime(this,'now')">Now</div>
+        <div class="tpill" onclick="selTime(this,'30')">+30 min</div>
+        <div class="tpill" onclick="selTime(this,'peak-am')">Peak AM</div>
+        <div class="tpill" onclick="selTime(this,'peak-pm')">Peak PM</div>
+      </div>
+      <button class="predict-btn" onclick="runPredict()">🤖 Get AI Prediction</button>
+
+      <!-- Stop selector -->
+      <div id="stopPicker" style="display:none;margin-top:12px;">
+        <div style="font-size:0.78rem;color:var(--text2);margin-bottom:8px;font-weight:600;">SELECT STOP</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;" id="stopPickerList"></div>
+      </div>
+    </div>
+
+    <div class="result-card" id="resultCard">
+      <div class="result-route" id="rRoute">Nyabugogo → Downtown</div>
+      <div class="result-metrics">
+        <div class="rmetric">
+          <span class="rmetric-val accent" id="rArr">12 min</span>
+          <div class="rmetric-key">Next Arrival</div>
+        </div>
+        <div class="rmetric">
+          <span class="rmetric-val" id="rCap" style="color:var(--accent)">62%</span>
+          <div class="rmetric-key">Bus Capacity</div>
+        </div>
+        <div class="rmetric">
+          <span class="rmetric-val blue" id="rFare">RWF 250</span>
+          <div class="rmetric-key">Fare (Tap & Go)</div>
+        </div>
+        <div class="rmetric">
+          <span class="rmetric-val" id="rVar" style="color:var(--yellow)">±2 min</span>
+          <div class="rmetric-key">AI Variance</div>
+        </div>
+      </div>
+      <div class="result-advice" id="rAdvice">
+        <strong>Good conditions.</strong> Next bus arrives in ~12 minutes at moderate capacity.
+        Ideal time to travel. Operator: <strong>KBS / RITCO</strong>.
+      </div>
+      <div class="buses-coming">
+        <div class="bcome-title">UPCOMING BUSES ON THIS ROUTE</div>
+        <div class="bcome-list" id="busesList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 2 · OPERATOR ═══ -->
+<div class="screen" id="s2">
+  <div class="screen-title">Operator Dashboard</div>
+  <div class="screen-sub">Real-time fleet intelligence · AI demand forecasting · Route optimization</div>
+
+  <div class="dash-grid">
+    <div class="dkpi g">
+      <div class="dkpi-icon">🚌</div>
+      <span class="dkpi-val accent" id="dk1">487</span>
+      <div class="dkpi-label">Buses On Route</div>
+      <div class="dkpi-trend">▲ 3% vs yesterday</div>
+    </div>
+    <div class="dkpi b">
+      <div class="dkpi-icon">👥</div>
+      <span class="dkpi-val blue" id="dk2">24,310</span>
+      <div class="dkpi-label">Passengers Today</div>
+      <div class="dkpi-trend">▲ 7% vs yesterday</div>
+    </div>
+    <div class="dkpi o">
+      <div class="dkpi-icon">⏱</div>
+      <span class="dkpi-val orange" id="dk3">8.4 min</span>
+      <div class="dkpi-label">Avg Wait Time</div>
+      <div class="dkpi-trend">▼ 12% improvement</div>
+    </div>
+    <div class="dkpi r">
+      <div class="dkpi-icon">⚡</div>
+      <span class="dkpi-val red" id="dk4">3</span>
+      <div class="dkpi-label">Active Alerts</div>
+      <div class="dkpi-trend">Congestion detected</div>
+    </div>
+  </div>
+
+  <div class="dash-row2">
+    <div class="dcard">
+      <div class="dcard-title">AI Demand Forecast — Next 6 Hours <span class="dtag warn">Peak at +2h</span></div>
+      <div class="forecast-bars" id="fcastBars"></div>
+    </div>
+    <div class="dcard">
+      <div class="dcard-title">Live Alerts <span class="dtag alert">3 Active</span></div>
+      <div id="alertsEl"></div>
+    </div>
+  </div>
+
+  <div class="dash-row3">
+    <div class="dcard" style="grid-column:1/3">
+      <div class="dcard-title">Corridor Status <span class="dtag">Real-time</span></div>
+      <div class="corr-table" id="corrTable"></div>
+    </div>
+    <div class="dcard">
+      <div class="dcard-title">Fleet Sample <span class="dtag">Live</span></div>
+      <div class="fleet-grid" id="fleetGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 3 · TICKETING ═══ -->
+<div class="screen" id="s3">
+  <div class="screen-title">Digital Ticketing</div>
+  <div class="screen-sub">MoMo · Airtel Money · Tap &amp; Go top-up · QR code · Ecofleet integrated</div>
+  <div class="ticket-layout">
+    <div class="tform">
+      <h3>🎫 Buy Ticket</h3>
+      <div class="fg">
+        <label>From</label>
+        <select id="tf" onchange="updateFare()">
+          <option>Nyabugogo Terminal</option>
+          <option>Downtown / CBD</option>
+          <option>Remera Bus Park</option>
+          <option>Kimironko</option>
+          <option>Kacyiru</option>
+          <option>Kicukiro Centre</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>To</label>
+        <select id="tt" onchange="updateFare()">
+          <option>Downtown / CBD</option>
+          <option>Nyabugogo Terminal</option>
+          <option>Kabuga</option>
+          <option>Kicukiro Centre</option>
+          <option>Kimironko</option>
+          <option>Nyamirambo</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Passengers</label>
+        <div style="display:flex;align-items:center;gap:0;">
+          <button onclick="chQty(-1)" style="width:40px;height:40px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:1.1rem;border-radius:8px 0 0 8px;cursor:pointer;">−</button>
+          <span id="qtyD" style="flex:1;background:var(--bg2);border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);height:40px;display:flex;align-items:center;justify-content:center;font-weight:700;">1</span>
+          <button onclick="chQty(1)" style="width:40px;height:40px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:1.1rem;border-radius:0 8px 8px 0;cursor:pointer;">+</button>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Payment</label>
+        <div class="pay-grid">
+          <div class="poption active" onclick="selPay(this,'MoMo')">📱 MoMo</div>
+          <div class="poption" onclick="selPay(this,'Airtel')">📱 Airtel</div>
+          <div class="poption" onclick="selPay(this,'TapGo')">💳 Tap &amp; Go</div>
+          <div class="poption" onclick="selPay(this,'QR')">📲 QR Code</div>
+        </div>
+      </div>
+      <div class="fare-row">
+        <span class="fare-label">Estimated Fare</span>
+        <span class="fare-val" id="fareVal">RWF 250</span>
+      </div>
+      <button class="buy-btn" onclick="buyTicket()">Purchase Ticket →</button>
+    </div>
+
+    <div class="ticket-output">
+      <div class="tcard" id="tOutput">
+        <div class="tc-top">
+          <div class="tc-logo">⬡ Trans<span>-X</span></div>
+          <div class="tc-num">
+            <div class="tc-num-val" id="tNum">TX-00000000</div>
+            <div class="tc-num-date" id="tDate">— · —</div>
+          </div>
+        </div>
+        <div class="tc-route">
+          <div class="tc-stop"><span id="tFrom">Nyabugogo</span><small>Departure</small></div>
+          <div class="tc-arrow">→</div>
+          <div class="tc-stop"><span id="tTo">Downtown</span><small>Destination</small></div>
+        </div>
+        <div class="tc-details">
+          <div class="tc-det"><span id="tPax">1</span><small>Passenger</small></div>
+          <div class="tc-det"><span id="tFare">RWF 250</span><small>Total Fare</small></div>
+          <div class="tc-det"><span id="tPay">MoMo</span><small>Payment</small></div>
+        </div>
+        <div class="tc-qr">📲</div>
+        <div class="tc-note">Valid for single journey · Tap-and-Go compatible · Ecofleet Network</div>
+      </div>
+      <div class="eco-note">
+        <div class="eco-note-icon">⚡</div>
+        <div>Trans-X ticketing is <strong>fully compatible</strong> with Ecofleet's Tap &amp; Go infrastructure.
+        Your QR code or MoMo payment links directly to your Tap &amp; Go card balance —
+        no new hardware required on the bus.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 4 · ABOUT ═══ -->
+<div class="screen" id="s4">
+  <div class="about-grid">
+    <div class="about-left">
+      <div class="about-chip">🌍 UNICEF Venture Fund · 2025 Application</div>
+      <div class="about-title">Built for Kigali.<br/>Designed for <span class="grad">Every Youth.</span></div>
+      <p class="about-desc">
+        Trans-X addresses a critical mobility gap faced by students, youth, and underserved
+        communities in Kigali — where 500+ buses run daily without a single intelligent
+        coordination layer. We change that.
+      </p>
+      <div class="impact-list">
+        <div class="impact-item">
+          <div class="impact-icon">📉</div>
+          <div class="impact-text"><strong>Reduces waiting time</strong> by predicting bus arrivals with AI — helping students arrive on time to school and work.</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-icon">🗺</div>
+          <div class="impact-text"><strong>Covers all 7 corridors</strong> and 40+ routes across Kigali — including new routes to SEZ, Bumbogo, and Shyorongi.</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-icon">💳</div>
+          <div class="impact-text"><strong>Integrates with Ecofleet Tap &amp; Go</strong> — adding MoMo top-up and QR ticketing without replacing existing hardware.</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-icon">📊</div>
+          <div class="impact-text"><strong>Gives operators and RURA</strong> real-time data dashboards for smarter fleet management and urban planning.</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-right">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Technology Stack</div>
+      <div class="stack-grid">
+        <div class="stack-item">
+          <div class="stack-name accent">AI / ML Engine</div>
+          <div class="stack-desc">Demand forecasting · Arrival prediction · Route optimization</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name blue">GPS Tracking</div>
+          <div class="stack-desc">Real-time fleet location via 4G · Ecofleet ITS integration</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name orange">Digital Payments</div>
+          <div class="stack-desc">MoMo · Airtel Money · Tap &amp; Go top-up · QR code</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name" style="color:var(--purple)">Data Analytics</div>
+          <div class="stack-desc">Usage patterns · Peak analysis · City planning insights</div>
+        </div>
+      </div>
+      <div class="partner-row" style="margin-top:16px;">
+        <h4>Ecosystem Partners</h4>
+        <div class="partner-chips">
+          <div class="pchip">⚡ Ecofleet Solutions</div>
+          <div class="pchip">🏛 RURA</div>
+          <div class="pchip">🏙 City of Kigali</div>
+          <div class="pchip">📱 MTN MoMo</div>
+          <div class="pchip">📡 Airtel Rwanda</div>
+          <div class="pchip">🚌 KBS</div>
+          <div class="pchip">🌍 UNICEF</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;margin-bottom:14px;">Scalability Roadmap</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div style="width:28px;height:28px;background:rgba(0,232,122,0.1);border:1px solid rgba(0,232,122,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:var(--accent);">1</div>
+            <div style="font-size:0.85rem;color:var(--text2);"><strong style="color:var(--text);">Kigali pilot</strong> — 1 corridor, 10 buses, 60 days</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div style="width:28px;height:28px;background:rgba(30,155,255,0.1);border:1px solid rgba(30,155,255,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:var(--blue);">2</div>
+            <div style="font-size:0.85rem;color:var(--text2);"><strong style="color:var(--text);">Full Kigali</strong> — all 7 corridors, 500+ buses</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div style="width:28px;height:28px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:var(--purple);">3</div>
+            <div style="font-size:0.85rem;color:var(--text2);"><strong style="color:var(--text);">East Africa</strong> — Nairobi, Kampala, Dar es Salaam</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <button class="bnav-btn active" onclick="go(0)" id="bn0"><div class="bnav-icon">🏠</div>Overview</button>
+  <button class="bnav-btn" onclick="go(1)" id="bn1"><div class="bnav-icon">🧑‍💼</div>Commuter</button>
+  <button class="bnav-btn" onclick="go(2)" id="bn2"><div class="bnav-icon">📊</div>Operator</button>
+  <button class="bnav-btn" onclick="go(3)" id="bn3"><div class="bnav-icon">🎫</div>Ticket</button>
+  <button class="bnav-btn" onclick="go(4)" id="bn4"><div class="bnav-icon">ℹ️</div>About</button>
+</div>
+
+<script>
+// ── NAVIGATION ──
+let currentScreen = 0;
+function go(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.npill').forEach(p => p.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  document.getElementById('bn'+n).classList.add('active');
+  document.querySelectorAll('.npill')[n].classList.add('active');
+  currentScreen = n;
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(n===2) initDash();
+}
+
+// ── COUNTER ANIMATION ──
+function animCount(id, target, suffix='') {
+  const el = document.getElementById(id);
+  if(!el) return;
+  let v = 0; const step = target/60;
+  const t = setInterval(()=>{
+    v = Math.min(v+step, target);
+    el.textContent = Math.round(v).toLocaleString() + suffix;
+    if(v>=target) clearInterval(t);
+  }, 18);
+}
+
+// ── MAP ──
+const NODES = [
+  {id:'nyb', label:'Nyabugogo', x:22, y:50, hub:true},
+  {id:'dwn', label:'Downtown', x:37, y:57, hub:true},
+  {id:'rem', label:'Remera', x:60, y:45, hub:true},
+  {id:'kim', label:'Kimironko', x:70, y:30, hub:false},
+  {id:'kac', label:'Kacyiru', x:50, y:40, hub:false},
+  {id:'kic', label:'Kicukiro', x:57, y:70, hub:false},
+  {id:'nya', label:'Nyamirambo', x:22, y:72, hub:false},
+  {id:'kin', label:'Kinyinya', x:78, y:20, hub:false},
+  {id:'kab', label:'Kabuga', x:86, y:42, hub:false},
+  {id:'bat', label:'Batsinda', x:56, y:22, hub:false},
+  {id:'sez', label:'SEZ Masoro', x:12, y:28, hub:false},
+];
+const EDGES = [
+  ['nyb','dwn'],['dwn','rem'],['rem','kac'],['kac','dwn'],
+  ['rem','kim'],['kim','kin'],['dwn','kic'],['dwn','nya'],
+  ['kab','rem'],['bat','kim'],['nyb','nya'],['nyb','sez'],
+  ['kac','bat'],['kin','bat'],
+];
+
+function buildMap(containerId) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = '';
+  const W = el.clientWidth || 500, H = el.clientHeight || 260;
+
+  // Edges
+  EDGES.forEach(([a,b]) => {
+    const nA = NODES.find(n=>n.id===a), nB = NODES.find(n=>n.id===b);
+    const x1=nA.x/100*W, y1=nA.y/100*H, x2=nB.x/100*W, y2=nB.y/100*H;
+    const len = Math.sqrt((x2-x1)**2+(y2-y1)**2);
+    const angle = Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+    const line = document.createElement('div');
+    line.className = 'mline';
+    line.style.cssText = `left:${x1}px;top:${y1}px;width:${len}px;transform:rotate(${angle}deg)`;
+    el.appendChild(line);
+  });
+
+  // Nodes
+  NODES.forEach(node => {
+    const wrap = document.createElement('div');
+    wrap.className = 'mnode';
+    wrap.style.cssText = `left:${node.x}%;top:${node.y}%`;
+    wrap.innerHTML = `<div class="mnode-dot${node.hub?' hub':''}"></div><div class="mnode-label">${node.label}</div>`;
+    el.appendChild(wrap);
+  });
+
+  // Animated buses
+  for(let i=0;i<10;i++) spawnBus(el, W, H);
+}
+
+function spawnBus(el, W, H) {
+  const edge = EDGES[Math.floor(Math.random()*EDGES.length)];
+  const nA = NODES.find(n=>n.id===edge[0]), nB = NODES.find(n=>n.id===edge[1]);
+  const bus = document.createElement('div');
+  const isBusy = Math.random()>0.7;
+  bus.className = 'mbus'+(isBusy?' busy':'');
+  el.appendChild(bus);
+  let t = Math.random(), dir = Math.random()>0.5?1:-1;
+  const speed = 0.001+Math.random()*0.002;
+  function step() {
+    t += speed*dir;
+    if(t>=1){t=1;dir=-1;} if(t<=0){t=0;dir=1;}
+    bus.style.left = `${(nA.x+(nB.x-nA.x)*t)/100*W}px`;
+    bus.style.top  = `${(nA.y+(nB.y-nA.y)*t)/100*H}px`;
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ── COMMUTER ──
+let fromStop='Nyabugogo Terminal', toStop='Downtown / CBD', timeMode='now';
+let pickingFor = null;
+
+const STOPS = ['Nyabugogo Terminal','Downtown / CBD','Remera Bus Park','Kimironko','Kacyiru','Kicukiro Centre','Kabuga','Nyamirambo','Kinyinya','Batsinda'];
+const ROUTE_DB = {
+  'Nyabugogo Terminal|Downtown / CBD':{arr:12,cap:62,fare:250,op:'KBS / RITCO',var:2},
+  'Downtown / CBD|Nyabugogo Terminal':{arr:14,cap:70,fare:250,op:'KBS / RITCO',var:3},
+  'Remera Bus Park|Downtown / CBD':{arr:18,cap:55,fare:250,op:'Volcano / KBS',var:2},
+  'Kimironko|Downtown / CBD':{arr:22,cap:80,fare:300,op:'Royal Express',var:4},
+  'Kacyiru|Downtown / CBD':{arr:15,cap:58,fare:250,op:'Ebenezer',var:2},
+  'Kabuga|Nyabugogo Terminal':{arr:35,cap:45,fare:400,op:'KBS',var:5},
+  'Nyamirambo|Downtown / CBD':{arr:20,cap:65,fare:300,op:'RFTC / KBS',var:3},
+};
+const TIME_MULT = {now:1,30:0.85,'peak-am':1.85,'peak-pm':1.9};
+const PEAK_LABELS = {now:'Normal conditions',30:'30 min ahead','peak-am':'Morning peak (7–9 AM)','peak-pm':'Evening peak (5–7 PM)'};
+
+function setStop(type, stop) {
+  pickingFor = type;
+  const picker = document.getElementById('stopPicker');
+  const list = document.getElementById('stopPickerList');
+  list.innerHTML = STOPS.map(s=>`<button onclick="chooseSt('${s}')" style="background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:7px 12px;border-radius:8px;font-size:0.8rem;cursor:pointer;">${s}</button>`).join('');
+  picker.style.display='block';
+}
+function chooseSt(s) {
+  if(pickingFor==='from'){fromStop=s;document.getElementById('fromLabel').textContent=s;}
+  else{toStop=s;document.getElementById('toLabel').textContent=s;}
+  document.getElementById('stopPicker').style.display='none';
+}
+function selTime(el, mode) {
+  document.querySelectorAll('.tpill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active'); timeMode=mode;
+}
+
+function runPredict() {
+  const key = `${fromStop}|${toStop}`;
+  const rkey = `${toStop}|${fromStop}`;
+  const d = ROUTE_DB[key]||ROUTE_DB[rkey]||{arr:18,cap:60,fare:300,op:'Trans-X Network',var:3};
+  const m = TIME_MULT[timeMode]||1;
+  const arr = Math.round(d.arr*m);
+  const cap = Math.min(Math.round(d.cap*m+Math.random()*8),98);
+  const capColor = cap>85?'var(--red)':cap>65?'var(--yellow)':'var(--accent)';
+  const isPeak = m>1.4;
+  document.getElementById('rRoute').textContent = `${fromStop} → ${toStop}`;
+  document.getElementById('rArr').textContent = arr+' min';
+  document.getElementById('rCap').textContent = cap+'%';
+  document.getElementById('rCap').style.color = capColor;
+  document.getElementById('rFare').textContent = 'RWF '+d.fare;
+  document.getElementById('rVar').textContent = '±'+d.var+' min';
+  document.getElementById('rAdvice').innerHTML = isPeak
+    ? `<strong style="color:var(--yellow)">⚠️ Peak hour.</strong> Demand is ${Math.round((m-1)*100)}% above normal. Consider leaving <strong>15–20 minutes earlier</strong>. Operator: <strong>${d.op}</strong>.`
+    : `<strong style="color:var(--accent)">✅ Good conditions.</strong> ${PEAK_LABELS[timeMode]}. Comfortable journey expected. Operator: <strong>${d.op}</strong>.`;
+
+  // Upcoming buses
+  const buses = [
+    {num:Math.floor(Math.random()*900+100), t:Math.round(arr*0.6), cap:Math.min(cap-10,90)},
+    {num:Math.floor(Math.random()*900+100), t:arr, cap},
+    {num:Math.floor(Math.random()*900+100), t:arr+Math.round(5+Math.random()*8), cap:Math.min(cap+8,99)},
+  ];
+  const capC = c=>c>85?'var(--red)':c>65?'var(--yellow)':'var(--accent)';
+  document.getElementById('busesList').innerHTML = buses.map(b=>`
+    <div class="bcome-item">
+      <div class="bcome-num">${b.num}</div>
+      <div style="flex:1;font-size:0.8rem;color:var(--text2);">Bus KGL-${b.num}</div>
+      <div class="cap-bar"><div class="cap-fill" style="width:${b.cap}%;background:${capC(b.cap)}"></div></div>
+      <div style="font-size:0.72rem;color:var(--text2);min-width:28px">${b.cap}%</div>
+      <div class="bcome-time">${b.t} min</div>
+    </div>
+  `).join('');
+}
+
+// ── DASHBOARD ──
+const CORRS = [
+  {id:'A',name:'Gasabo / Kicukiro East',color:'#00e87a',buses:98,load:72,status:'ok'},
+  {id:'B',name:'Downtown–Kicukiro',color:'#1e9bff',buses:85,load:68,status:'ok'},
+  {id:'C',name:'Nyarugenge South',color:'#ff8c3a',buses:62,load:75,status:'busy'},
+  {id:'D',name:'Nyarugenge West',color:'#ffd32a',buses:55,load:61,status:'ok'},
+  {id:'E',name:'Gasabo North',color:'#a855f7',buses:78,load:82,status:'busy'},
+  {id:'F',name:'Batsinda / Zindiro',color:'#00c4ff',buses:68,load:65,status:'ok'},
+  {id:'G',name:'Nyarugenge (Main)',color:'#ff4757',buses:92,load:79,status:'warn'},
+];
+const FCAST = [
+  {h:'Now',v:65},{h:'+1h',v:78},{h:'+2h',v:92},{h:'+3h',v:88},{h:'+4h',v:71},{h:'+5h',v:58},{h:'+6h',v:45}
+];
+const ALERTS = [
+  {type:'r',icon:'🔴',msg:'Nyabugogo–Downtown: 94% capacity',time:'2 min ago'},
+  {type:'o',icon:'🟠',msg:'Kimironko: 3 buses delayed 10+ min',time:'8 min ago'},
+  {type:'y',icon:'🟡',msg:'Corridor G: Peak demand rising',time:'15 min ago'},
+];
+const FLEET = [
+  {num:'KGL-201',route:'A2 Remera→CBD',status:'on'},
+  {num:'KGL-087',route:'E2 Kimironko→DT',status:'full'},
+  {num:'KGL-334',route:'G1 Nyamirambo→DT',status:'on'},
+  {num:'KGL-156',route:'B1 Nyabugogo→Kic',status:'late'},
+  {num:'KGL-412',route:'C1 Nyamirambo→DT',status:'on'},
+  {num:'KGL-290',route:'F2 Kimironko→Nyb',status:'on'},
+];
+
+function initDash() {
+  // Forecast
+  const fb = document.getElementById('fcastBars');
+  if(fb && !fb.children.length) {
+    const max = Math.max(...FCAST.map(f=>f.v));
+    fb.innerHTML = FCAST.map(f=>{
+      const c = f.v>85?'var(--red)':f.v>70?'var(--yellow)':'var(--accent)';
+      return `<div class="fbar-wrap">
+        <div class="fbar-val" style="color:${c}">${f.v}%</div>
+        <div class="fbar" style="height:0;background:${c}" data-h="${(f.v/max)*140}"></div>
+        <div class="fbar-label">${f.h}</div>
+      </div>`;
+    }).join('');
+    setTimeout(()=>{fb.querySelectorAll('.fbar').forEach(b=>{b.style.height=b.dataset.h+'px';});},200);
+  }
+  // Alerts
+  const al = document.getElementById('alertsEl');
+  if(al&&!al.children.length) al.innerHTML = ALERTS.map(a=>`
+    <div class="alert-item ${a.type}">
+      <div class="ai-icon">${a.icon}</div>
+      <div><div class="ai-msg">${a.msg}</div><div class="ai-time">${a.time}</div></div>
+    </div>`).join('');
+  // Corridors
+  const ct = document.getElementById('corrTable');
+  if(ct&&!ct.children.length) ct.innerHTML = CORRS.map(c=>`
+    <div class="ct-row">
+      <div class="ct-badge" style="background:${c.color}18;color:${c.color}">${c.id}</div>
+      <div class="ct-name">${c.name}</div>
+      <div class="ct-load">${c.buses} buses</div>
+      <div class="ct-bar"><div class="ct-fill" style="width:${c.load}%;background:${c.color}"></div></div>
+      <div class="ct-load">${c.load}%</div>
+      <div class="ct-status" style="background:${c.status==='ok'?'var(--accent)':c.status==='busy'?'var(--orange)':'var(--yellow)'}"></div>
+    </div>`).join('');
+  // Fleet
+  const fg = document.getElementById('fleetGrid');
+  if(fg&&!fg.children.length) fg.innerHTML = FLEET.map(f=>`
+    <div class="fleet-item">
+      <div class="fi-bus">${f.num}</div>
+      <div class="fi-route">${f.route}</div>
+      <div class="fi-status ${f.status}">${f.status==='on'?'On Route':f.status==='full'?'At Capacity':'Delayed'}</div>
+    </div>`).join('');
+  // Live KPI updates
+  setInterval(()=>{
+    const n = parseInt(document.getElementById('dk2').textContent.replace(/,/g,''));
+    document.getElementById('dk2').textContent = (n+Math.floor(Math.random()*60+10)).toLocaleString();
+  }, 3000);
+}
+
+// ── TICKETING ──
+let tQty=1, tPay='MoMo';
+const FARES_T = {
+  'Nyabugogo Terminal|Downtown / CBD':250,'Downtown / CBD|Nyabugogo Terminal':250,
+  'Downtown / CBD|Kabuga':400,'Downtown / CBD|Kicukiro Centre':300,
+  'Downtown / CBD|Kimironko':300,'Downtown / CBD|Nyamirambo':300,
+  'Remera Bus Park|Downtown / CBD':250,'Remera Bus Park|Kimironko':200,
+  'Nyabugogo Terminal|Kabuga':400,'Nyabugogo Terminal|Kimironko':350,
+};
+function getFare(){
+  const f=document.getElementById('tf').value, t=document.getElementById('tt').value;
+  return FARES_T[`${f}|${t}`]||FARES_T[`${t}|${f}`]||300;
+}
+function updateFare(){document.getElementById('fareVal').textContent='RWF '+(getFare()*tQty).toLocaleString();}
+function chQty(d){tQty=Math.max(1,Math.min(10,tQty+d));document.getElementById('qtyD').textContent=tQty;updateFare();}
+function selPay(el,m){document.querySelectorAll('.poption').forEach(p=>p.classList.remove('active'));el.classList.add('active');tPay=m;}
+function buyTicket(){
+  const f=document.getElementById('tf').value, t=document.getElementById('tt').value;
+  const fare=getFare()*tQty;
+  const num='TX-'+Date.now().toString().slice(-8);
+  const now=new Date();
+  document.getElementById('tNum').textContent=num;
+  document.getElementById('tDate').textContent=now.toLocaleDateString('en-RW',{day:'2-digit',month:'short',year:'numeric'})+' · '+now.toLocaleTimeString('en-RW',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('tFrom').textContent=f.replace(' Terminal','').replace(' Bus Park','');
+  document.getElementById('tTo').textContent=t.replace(' Terminal','').replace(' Bus Park','');
+  document.getElementById('tPax').textContent=tQty;
+  document.getElementById('tFare').textContent='RWF '+fare.toLocaleString();
+  document.getElementById('tPay').textContent=tPay;
+  document.getElementById('tOutput').style.border='1px solid rgba(0,232,122,0.5)';
+  setTimeout(()=>{document.getElementById('tOutput').style.border='1px solid rgba(0,232,122,0.3)';},800);
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', ()=>{
+  // Build maps
+  setTimeout(()=>{
+    buildMap('heroMap');
+  }, 300);
+
+  // Animate hero counters
+  setTimeout(()=>{
+    animCount('hc1',487); animCount('hc2',7);
+    animCount('hc3',18); animCount('hc4',40);
+    animCount('hc5',24310);
+  }, 400);
+
+  // Live bus counter
+  setInterval(()=>{
+    const v=parseInt(document.getElementById('dk1')?.textContent||'487');
+    if(document.getElementById('dk1')) document.getElementById('dk1').textContent=(v+Math.floor(Math.random()*4)-1);
+  },3500);
+
+  // Initial prediction
+  runPredict();
+});
+</script>
+</body>
+</html>
