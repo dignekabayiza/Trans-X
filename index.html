@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trans-X — Smart Mobility Kigali</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="main.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">Trans<span class="accent">-X</span></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#routes">Routes</a></li>
+      <li><a href="#operators">Operators</a></li>
+      <li><a href="#predict">AI Predict</a></li>
+      <li><a href="#ticket">Ticket</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="live-dot"></span>
+      <span class="live-label">LIVE</span>
+      <button class="btn-primary" onclick="showSection('ticket')">Buy Ticket</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-glow g1"></div>
+    <div class="hero-glow g2"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">Powered by Ecofleet Solutions & RURA</div>
+    <h1 class="hero-title">Kigali Moves<br/><span class="accent-gradient">Smarter</span></h1>
+    <p class="hero-sub">AI-powered bus coordination across all 7 corridors.<br/>Real-time tracking · Digital ticketing · Demand forecasting.</p>
+    <div class="hero-actions">
+      <button class="btn-primary large" onclick="showSection('dashboard')">Open Dashboard</button>
+      <button class="btn-ghost large" onclick="showSection('routes')">View Routes</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num" data-target="500">0</span><span class="stat-plus">+</span><span class="stat-label">Buses Active</span></div>
+      <div class="stat"><span class="stat-num" data-target="7">0</span><span class="stat-label">Corridors</span></div>
+      <div class="stat"><span class="stat-num" data-target="18">0</span><span class="stat-label">Operators</span></div>
+      <div class="stat"><span class="stat-num" data-target="40">0</span><span class="stat-plus">+</span><span class="stat-label">Active Routes</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="map-card">
+      <div class="map-header">
+        <span>Live Fleet Map — Kigali</span>
+        <span class="pulse-dot"></span>
+      </div>
+      <div class="map-body" id="liveMap"></div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN APP -->
+<main class="app-main" id="appMain">
+
+<!-- DASHBOARD SECTION -->
+<section class="section active" id="dashboard">
+  <div class="section-header">
+    <h2>Operations Dashboard</h2>
+    <p>Real-time fleet intelligence powered by Trans-X AI</p>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- KPI Cards -->
+    <div class="kpi-row">
+      <div class="kpi-card green">
+        <div class="kpi-icon">🚌</div>
+        <div class="kpi-data">
+          <span class="kpi-num" id="busCount">487</span>
+          <span class="kpi-label">Buses On Route</span>
+        </div>
+        <div class="kpi-trend">▲ 3% vs yesterday</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-data">
+          <span class="kpi-num" id="passengerCount">24,310</span>
+          <span class="kpi-label">Passengers Today</span>
+        </div>
+        <div class="kpi-trend">▲ 7% vs yesterday</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-icon">⏱</div>
+        <div class="kpi-data">
+          <span class="kpi-num" id="waitTime">8.4 min</span>
+          <span class="kpi-label">Avg Wait Time</span>
+        </div>
+        <div class="kpi-trend">▼ 12% improvement</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-icon">🔴</div>
+        <div class="kpi-data">
+          <span class="kpi-num" id="alertCount">3</span>
+          <span class="kpi-label">Active Alerts</span>
+        </div>
+        <div class="kpi-trend">Congestion detected</div>
+      </div>
+    </div>
+
+    <!-- Corridor Status -->
+    <div class="card corridor-card">
+      <div class="card-title">Corridor Status — Real Time</div>
+      <div class="corridor-list" id="corridorList"></div>
+    </div>
+
+    <!-- AI Demand Forecast -->
+    <div class="card forecast-card">
+      <div class="card-title">AI Demand Forecast — Next 6hrs</div>
+      <div class="chart-area" id="demandChart"></div>
+    </div>
+
+    <!-- Live Alerts -->
+    <div class="card alerts-card">
+      <div class="card-title">Live Alerts <span class="badge red">3</span></div>
+      <div class="alert-list" id="alertList"></div>
+    </div>
+
+    <!-- Top Routes -->
+    <div class="card routes-card">
+      <div class="card-title">Top Routes by Load</div>
+      <div class="route-bars" id="routeBars"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUTES SECTION -->
+<section class="section" id="routes">
+  <div class="section-header">
+    <h2>Kigali Bus Network</h2>
+    <p>7 corridors · 40+ routes · 18 licensed operators (RURA 2024)</p>
+  </div>
+
+  <div class="corridors-container" id="corridorsContainer"></div>
+</section>
+
+<!-- OPERATORS SECTION -->
+<section class="section" id="operators">
+  <div class="section-header">
+    <h2>Licensed Operators</h2>
+    <p>Regulated by RURA · Managed by Ecofleet Solutions Ltd</p>
+  </div>
+  <div class="operators-grid" id="operatorsGrid"></div>
+
+  <!-- Ecofleet spotlight -->
+  <div class="ecofleet-spotlight">
+    <div class="eco-left">
+      <div class="eco-badge">Government-Owned</div>
+      <h3>Ecofleet Solutions Ltd</h3>
+      <p>The City of Kigali's mandated authority for public transport modernization. CEO: <strong>Aubin Rukera</strong>. Ecofleet oversees fleet management, route optimization, digital fare collection, ITS infrastructure, and green mobility transition.</p>
+      <ul class="eco-features">
+        <li>⚡ 17 electric buses deployed (as of Jan 2026)</li>
+        <li>📡 ITS · GPS tracking · Digital dashboards</li>
+        <li>💳 Unified tap-and-go fare collection</li>
+        <li>🌱 Full electric fleet target: end of 2026</li>
+        <li>🏗 Manages depots, terminals & bus stops</li>
+      </ul>
+    </div>
+    <div class="eco-right">
+      <div class="eco-stat-grid">
+        <div class="eco-stat"><span>300</span><small>Buses Deployed</small></div>
+        <div class="eco-stat"><span>7</span><small>Corridors</small></div>
+        <div class="eco-stat"><span>24km</span><small>Nyabugogo–Shyorongi Route</small></div>
+        <div class="eco-stat"><span>2026</span><small>Full EV Target</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI PREDICT SECTION -->
+<section class="section" id="predict">
+  <div class="section-header">
+    <h2>AI Arrival Predictor</h2>
+    <p>Machine learning · Real-time GPS · Traffic pattern analysis</p>
+  </div>
+  <div class="predict-container">
+    <div class="predict-form card">
+      <h3>Get Prediction</h3>
+      <div class="form-group">
+        <label>From</label>
+        <select id="fromStop">
+          <option value="">Select departure stop</option>
+          <option>Nyabugogo Terminal</option>
+          <option>Downtown / CBD</option>
+          <option>Remera Bus Park</option>
+          <option>Kimironko</option>
+          <option>Kacyiru</option>
+          <option>Kicukiro Centre</option>
+          <option>Kabuga</option>
+          <option>Nyamirambo</option>
+          <option>Batsinda</option>
+          <option>Kinyinya</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>To</label>
+        <select id="toStop">
+          <option value="">Select destination</option>
+          <option>Nyabugogo Terminal</option>
+          <option>Downtown / CBD</option>
+          <option>Remera Bus Park</option>
+          <option>Kimironko</option>
+          <option>Kacyiru</option>
+          <option>Kicukiro Centre</option>
+          <option>Kabuga</option>
+          <option>Nyamirambo</option>
+          <option>Special Economic Zone (Masoro)</option>
+          <option>Bumbogo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Travel Time</label>
+        <select id="travelTime">
+          <option>Now</option>
+          <option>In 30 minutes</option>
+          <option>In 1 hour</option>
+          <option>Peak hour (7–9 AM)</option>
+          <option>Peak hour (5–7 PM)</option>
+        </select>
+      </div>
+      <button class="btn-primary full" onclick="runPrediction()">🔍 Run AI Prediction</button>
+    </div>
+    <div class="predict-result card" id="predictResult">
+      <div class="predict-placeholder">
+        <div class="predict-icon">🤖</div>
+        <p>Select your route and click "Run AI Prediction" to see arrival times, bus capacity forecast, and recommended departure window.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKET SECTION -->
+<section class="section" id="ticket">
+  <div class="section-header">
+    <h2>Digital Ticketing</h2>
+    <p>Tap-and-Go · MoMo · Airtel Money · QR Code</p>
+  </div>
+  <div class="ticket-container">
+    <div class="ticket-form card">
+      <h3>Buy Bus Ticket</h3>
+      <div class="form-group">
+        <label>From</label>
+        <select id="ticketFrom">
+          <option>Nyabugogo Terminal</option>
+          <option>Downtown / CBD</option>
+          <option>Remera Bus Park</option>
+          <option>Kimironko</option>
+          <option>Kacyiru</option>
+          <option>Kicukiro Centre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>To</label>
+        <select id="ticketTo">
+          <option>Downtown / CBD</option>
+          <option>Nyabugogo Terminal</option>
+          <option>Kabuga</option>
+          <option>Kicukiro Centre</option>
+          <option>Kimironko</option>
+          <option>Nyamirambo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Passengers</label>
+        <div class="qty-row">
+          <button onclick="changeQty(-1)">−</button>
+          <span id="qtyDisplay">1</span>
+          <button onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Payment Method</label>
+        <div class="payment-options">
+          <div class="pay-opt active" onclick="selectPay(this, 'MoMo')">📱 MoMo</div>
+          <div class="pay-opt" onclick="selectPay(this, 'Airtel')">📱 Airtel</div>
+          <div class="pay-opt" onclick="selectPay(this, 'Card')">💳 Tap Card</div>
+          <div class="pay-opt" onclick="selectPay(this, 'QR')">📲 QR</div>
+        </div>
+      </div>
+      <div class="fare-display" id="fareDisplay">
+        <span>Estimated Fare:</span>
+        <span id="fareAmount">RWF 300</span>
+      </div>
+      <button class="btn-primary full" onclick="purchaseTicket()">🎫 Purchase Ticket</button>
+    </div>
+    <div class="ticket-preview card" id="ticketPreview">
+      <div class="ticket-placeholder">
+        <span class="t-icon">🎫</span>
+        <p>Your digital ticket will appear here after purchase. Compatible with all Trans-X enabled buses.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button onclick="showSection('dashboard')" class="bnav active" id="bnav-dashboard">📊 Dashboard</button>
+  <button onclick="showSection('routes')" class="bnav" id="bnav-routes">🗺 Routes</button>
+  <button onclick="showSection('operators')" class="bnav" id="bnav-operators">🏢 Operators</button>
+  <button onclick="showSection('predict')" class="bnav" id="bnav-predict">🤖 Predict</button>
+  <button onclick="showSection('ticket')" class="bnav" id="bnav-ticket">🎫 Ticket</button>
+</div>
+
+<script src="routes.js"></script>
+<script src="buses.js"></script>
+<script src="predict.js"></script>
+<script src="ticket.js"></script>
+<script src="chart.js"></script>
+<script src="map.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
